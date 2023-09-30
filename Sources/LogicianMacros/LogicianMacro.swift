@@ -14,8 +14,7 @@ public struct LogicianLog: ExpressionMacro {
 			fatalError("compiler bug: the macro does not have enough arguments; got \(node.argumentList.count)")
 		}
 
-		let loggerTemporaryVar = context.makeUniqueName("logger")
-		let logTypeTemporaryVar = context.makeUniqueName("logType")
+		let strippedMessageTemporaryVar = context.makeUniqueName("strippedMessage")
 
 		guard let messageArgument = thirdArg.expression.as(StringLiteralExprSyntax.self) else {
 			throw ArgumentError(description: "Third argument must be a string literal")
@@ -25,10 +24,11 @@ public struct LogicianLog: ExpressionMacro {
 
 		return """
 		{
-			let \(loggerTemporaryVar): Logger = \(firstArg.expression)
-			let \(logTypeTemporaryVar): OSLogType = \(secondArg.expression)
-			\(loggerTemporaryVar).log(level: \(logTypeTemporaryVar), \(messageArgument))
-			print(\(strippedMessageArgument))
+			(\(firstArg.expression) as Logger).log(level: (\(secondArg.expression) as OSLogType), \(messageArgument))
+			let \(strippedMessageTemporaryVar): String = \(strippedMessageArgument)
+			for extraLogger in globalLogicianConfig.extraLoggers {
+				extraLogger(\(literal: firstArg.expression.description), \(literal: secondArg.expression.description), \(strippedMessageTemporaryVar))
+			}
 		}()
 		"""
 	}
