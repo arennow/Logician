@@ -1,11 +1,7 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
-/// A macro that produces both a value and a string containing the
-/// source code that generated the value. For example,
-///
-///     #stringify(x + y)
-///
-/// produces a tuple `(x + y, "x + y")`.
+import os
+
 @freestanding(expression)
-public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "LogicianMacros", type: "StringifyMacro")
+public macro log(in logger: Logger, as logType: OSLogType, _ value: OSLogMessage) = #externalMacro(module: "LogicianMacros", type: "LogicianLog")

@@ -1,8 +1,10 @@
 import Logician
+import os
 
-let a = 17
-let b = 25
+extension Logger {
+	static let screep = Logger(subsystem: "com.example.log", category: "test")
+}
 
-let (result, code) = #stringify(a + b)
-
-print("The value \(result) was produced by the code \"\(code)\"")
+#log(in: .screep, as: .debug, "This is two")
+#log(in: .screep, as: .debug, "This is a second one: \(1 + 5, privacy: .public)")
+#log(in: .screep, as: .error, "Bar!")
